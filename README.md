@@ -1,92 +1,45 @@
-# 🕷 Greed Island — The Spider's Web
+# 🕷 The Spider's Web — Phantom Troupe Network
 
-> **Challenge 01** · Phantom Troupe network · Dynamic MST with cursed-edge detection
+A high-performance, modular JavaScript implementation of a dynamic Minimum Spanning Tree (MST) system, themed around the Phantom Troupe's network from Greed Island.
 
-A vanilla HTML/CSS/JS single-page application that models the Phantom Troupe's
-Nen connections as a dynamic weighted graph and keeps a **Minimum Spanning
-Tree** live-updated as the web mutates. One of the threads in the web is
-**cursed** — the system detects it and refuses to weave it into the tree.
+## 🌟 Overview
 
----
+This project implements a real-time interactive graph representing the "Spider's Web." It features a custom **Incremental MST algorithm** that updates the spanning tree efficiently without full re-computation for every modification, alongside an **Anomaly Detection** system to identify "cursed" or suspicious threads.
 
-## Features
+## 🏗 Modular Architecture
 
-- **13 nodes** — every Phantom Troupe member, arranged on a ring.
-- **Interactive SVG graph** with glowing MST strands and flickering cursed edges.
-- **Live controls**
-  - Add Edge (nodeA, nodeB, weight)
-  - Remove Edge
-  - Update Weight
-  - Search Node → lists every thread connected to a member
-- **MST panel** — total weight, edge list, spanning / forest indicator.
-- **Anomaly Report** — explains *which* edge is suspicious and *why*.
-- **Edge inspector** — click any edge on the web to see weight, MST status,
-  and a suspicion level (NONE / LOW / MEDIUM / HIGH / CURSED) with reasoning.
-- **Incremental MST** — no full rebuild per mutation; see
-  [`strategy.txt`](./strategy.txt) for the proof sketch.
+The project has been refactored into a clean, ES6 module-based architecture:
 
----
+*   **`graph.js`**: Core data structure and graph CRUD (Add/Remove/Update).
+*   **`mst.js`**: Kruskal's algorithm, DSU (Union-Find), and incremental path-finding logic.
+*   **`anomaly.js`**: Statistical and rule-based anomaly detection (z-score outliers, cursed edges).
+*   **`render.js`**: Reactive SVG-based rendering system for the web layout.
+*   **`events.js`**: UI event management and form interaction.
+*   **`app.js`**: Entry point and application lifecycle management.
 
-## Running
+## 🚀 Features
 
-No build step, no dependencies. Just open the file:
+*   **Incremental MST Updates**: Uses path-maximum optimization to update the tree in $O(V)$ for adds and removals, rather than $O(E \log E)$.
+*   **Anomaly Detection**:
+    *   **Cursed Edges**: Identifies threads with non-finite or non-positive weights.
+    *   **Statistical Outliers**: Detects edges with weights deviating significantly from the mean (z-score > 2).
+    *   **Duplicates & Loops**: Flags parallel threads and self-loops.
+*   **Interactive UI**: Full control over edge weaving (adding), retuning (updating), and severing (removing).
+*   **Real-time Inspection**: Inspect individual nodes to see their connections and MST status.
 
-```bash
-# from the repo root
-start index.html        # Windows
-open  index.html        # macOS
-xdg-open index.html     # Linux
-```
+## 🛠 Technology Stack
 
-Or serve it with any static server (`python -m http.server`, `npx serve`, …).
+*   **Logic**: Pure JavaScript (ES6+)
+*   **Structure**: Semantic HTML5
+*   **Styling**: Vanilla CSS3 (Custom properties, Vignette effects)
+*   **Visualization**: SVG (Scalable Vector Graphics)
 
----
+## 📖 How to Run
 
-## File layout
+1.  Clone the repository.
+2.  Open `index.html` in any modern web browser.
+    *   *Note: Since this project uses ES6 Modules, you must serve it via a local web server (e.g., Live Server, Python `http.server`, or Node `http-server`) to avoid CORS issues with `file://` URLs.*
 
-| File | Role |
-| --- | --- |
-| `index.html` | SPA markup, SVG container, control forms, report panels |
-| `styles.css` | Meteor-City dark theme, glowing MST, flickering cursed edges |
-| `script.js` | Graph model, required API, Kruskal + DSU, incremental MST, anomaly detector, SVG renderer |
-| `strategy.txt` | MST algorithm, optimization strategy, and anomaly-detection logic |
+## 📜 License
 
----
-
-## Required API (exposed in `script.js`)
-
-```js
-addEdge(graph, edge)                // {a, b, weight}
-removeEdge(graph, edgeId)
-updateWeight(graph, edgeId, newWeight)
-computeMST(graph)                   // Kruskal + Union-Find
-detectAnomaly(graph)                // cursed / suspicious / outlier report
-```
-
----
-
-## Algorithms at a glance
-
-- **MST base** — Kruskal + Union-Find (path compression + union by rank),
-  `O(E log E)` on the initial build.
-- **Incremental on add** — cycle-property swap: find the heaviest edge on the
-  MST's u–v path; swap if the new edge is lighter. `O(V)`.
-- **Incremental on remove** — cut-property reconnect: label the two sides after
-  splitting, pick the minimum non-MST, non-cursed edge crossing the cut.
-  `O(V + E)`.
-- **Anomaly tiers**
-  - **CURSED** — weight `≤ 0` or non-finite → excluded from every MST pass.
-  - **SUSPICIOUS** — out of the declared `[1, 20]` range, self-loops,
-    parallel edges.
-  - **WATCH** — statistical outlier (`|z-score| > 2`).
-
-Verified: the incremental MST produces **the same total weight** as a full
-Kruskal rebuild on every sequence of mutations tested.
-
----
-
-## Seed
-
-The initial web ships with one deliberately planted **cursed thread**
-(Franklin ↔ Kalluto, weight `−3`) to prove the detector excludes it. Remove or
-retune it from the UI and watch the anomaly report clear.
+Created for the Phantom Troupe — Meteor City.
