@@ -1,0 +1,133 @@
+===============================================================
+ GREED ISLAND — THE SPIDER'S WEB : STRATEGY NOTES
+ Phantom Troupe network  |  13 nodes  |  dynamic weighted graph
+===============================================================
+
+1. MST ALGORITHM  (Kruskal + Union-Find)
+---------------------------------------------------------------
+The initial Minimum Spanning Tree is built with Kruskal's
+algorithm because we operate on an edge list and need to filter
+out cursed edges before selection.
+
+Steps:
+  a. Collect all edges whose weight is strictly positive and
+     finite (cursed edges are excluded here — see §3).
+  b. Sort those edges by ascending weight.
+  c. Walk the sorted list; for each edge (u, v, w), use a
+     Disjoint-Set Union (Union-Find) structure with path
+     compression + union-by-rank to check whether u and v are
+     already in the same component. If not, accept the edge
+     into the MST and union the components.
+  d. Stop once (V − 1) edges have been accepted, or when the
+     list is exhausted (result is a minimum spanning forest
+     when the graph is disconnected).
+
+Complexity:
+  - Sorting: O(E log E)
+  - Union-Find ops: near O(α(V)) per op ⇒ effectively O(E)
+  - Total: O(E log E)
+
+This is used:
+  - Once at boot (initial state).
+  - As a safety fallback if the incremental path is bypassed.
+
+
+2. INCREMENTAL OPTIMIZATION STRATEGY
+---------------------------------------------------------------
+Re-running Kruskal after every mutation is wasteful. The web
+is dynamic, so the MST is maintained incrementally:
+
+  ADD EDGE e = (u, v, w)  (valid, positive weight)
+    - Do a BFS over the CURRENT MST starting from u.
+      * If v is not reachable, the MST was split between u and
+        v — simply add e (it bridges two components).
+      * If v is reachable, inspect the unique u–v path inside
+        the MST. Let M be the heaviest edge on that path.
+          · If w < weight(M), swap: remove M, add e.
+          · Otherwise e is redundant; keep the tree as-is.
+    - Cost: O(V) (MST has ≤ V−1 edges).
+
+  REMOVE EDGE e = (u, v)
+    - If e is NOT in the MST: nothing to do (O(1)).
+    - If e IS in the MST:
+        1. Remove it; the MST splits into two subtrees S_u, S_v.
+        2. Label every node with the side it belongs to via BFS
+           over the remaining MST edges.
+        3. Scan all non-MST, non-cursed edges; pick the
+           minimum-weight edge whose endpoints sit on opposite
+           sides. Add it to the MST.
+        4. If none exists, the graph is disconnected; the MST
+           is now a minimum spanning forest (UI flags this).
+    - Cost: O(V + E).
+
+  UPDATE WEIGHT
+    - Behaves as remove + add at the MST level:
+        · If the edge was in the MST, run the remove procedure
+          first (which may promote a replacement edge).
+        · Then run the add procedure on the edge with its new
+          weight. This collapses the two cases (weight got
+          smaller → should enter MST; weight got larger →
+          heavier replacement may be better) into one path.
+    - Cost: O(V + E).
+
+Why this is correct:
+  - Cycle property: the heaviest edge on any cycle is never
+    in the MST. When adding e closes a cycle in the current
+    MST, removing the heaviest cycle-edge preserves optimality.
+  - Cut property: when e is removed and the tree splits, the
+    minimum edge across the resulting cut is guaranteed to be
+    in some MST. Picking it rebuilds a valid MST.
+
+Net effect: operations run in O(V + E) instead of O(E log E),
+with no sorting on the hot path.
+
+
+3. CURSED-EDGE / ANOMALY DETECTION LOGIC
+---------------------------------------------------------------
+Shizuku's rule: "one edge is cursed; if you include it in your
+MST, the entire tree collapses." The system treats anomalies
+at three severity tiers:
+
+  (a) CURSED — automatically excluded from every MST
+      computation (both the full Kruskal pass and the
+      incremental add/remove routines filter via
+      isValidForMST(e)):
+        · weight ≤ 0   — violates the strictly-positive rule
+        · weight is NaN / ±Infinity / non-finite
+      Rationale: a valid Nen connection must have positive
+      strength; a non-positive value is a corrupted signal
+      injected into the web.
+
+  (b) SUSPICIOUS — kept in the graph but flagged:
+        · weight outside the declared [1, 20] range
+        · self-loop (a == b), also blocked at insertion
+        · parallel / duplicate edges between the same pair
+
+  (c) WATCH — statistical outliers among the otherwise-valid
+      weights (|z-score| > 2 against the set mean & stddev).
+      These are not necessarily invalid, but they deviate
+      strongly enough to warrant a second look.
+
+Each anomaly entry carries:
+  { edgeId, level, code, message }
+so the UI can explain WHICH edge is suspicious and WHY.
+
+The seed data intentionally plants one CURSED thread
+(Franklin ↔ Kalluto, weight = −3) to demonstrate the detector
+and prove the MST never includes it.
+
+
+4. FILE LAYOUT
+---------------------------------------------------------------
+  index.html    Markup, SVG container, control forms
+  styles.css    Meteor-City dark theme, glowing MST strands
+  script.js     Graph model, required API, Kruskal + DSU,
+                incremental MST, anomaly detector, renderer
+  strategy.txt  This document
+
+Required API exported in script.js:
+  addEdge(graph, edge)
+  removeEdge(graph, edgeId)
+  updateWeight(graph, edgeId, newWeight)
+  computeMST(graph)
+  detectAnomaly(graph)

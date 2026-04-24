@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Greed Island — The Spider's Web</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="vignette"></div>
+
+  <header class="top-bar">
+    <h1>🕷 The Spider's Web</h1>
+    <p class="subtitle">Meteor City · Phantom Troupe Network · Challenge 01</p>
+  </header>
+
+  <main class="layout">
+
+    <section class="graph-panel">
+      <div class="graph-frame">
+        <svg id="graph" viewBox="0 0 720 720" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="2.5" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            <radialGradient id="nodeGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#b993ff"/>
+              <stop offset="100%" stop-color="#3a1d6e"/>
+            </radialGradient>
+          </defs>
+          <g id="edges-layer"></g>
+          <g id="nodes-layer"></g>
+        </svg>
+      </div>
+      <div class="legend">
+        <span class="dot dot-mst"></span> MST edge
+        <span class="dot dot-normal"></span> Normal edge
+        <span class="dot dot-cursed"></span> Cursed edge
+        <span class="dot dot-selected"></span> Selected
+      </div>
+    </section>
+
+    <aside class="side-panel">
+      <div class="card">
+        <h2>Controls</h2>
+
+        <form id="form-add" class="form-row">
+          <h3>Add Edge</h3>
+          <select id="add-a" required></select>
+          <select id="add-b" required></select>
+          <input id="add-w" type="number" min="-5" max="25" step="1" placeholder="weight (1–20)" required />
+          <button type="submit">Weave Thread</button>
+        </form>
+
+        <form id="form-update" class="form-row">
+          <h3>Update Weight</h3>
+          <select id="upd-edge" required></select>
+          <input id="upd-w" type="number" min="-5" max="25" step="1" placeholder="new weight" required />
+          <button type="submit">Retune</button>
+        </form>
+
+        <form id="form-remove" class="form-row">
+          <h3>Remove Edge</h3>
+          <select id="rem-edge" required></select>
+          <button type="submit">Sever Thread</button>
+        </form>
+
+        <form id="form-search" class="form-row">
+          <h3>Search Node</h3>
+          <select id="srch-node" required></select>
+          <button type="submit">Inspect</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Minimum Spanning Tree</h2>
+        <div id="mst-summary" class="summary">—</div>
+        <ul id="mst-list" class="edge-list"></ul>
+      </div>
+
+      <div class="card">
+        <h2>Anomaly Report</h2>
+        <div id="anomaly-report" class="anomaly">—</div>
+      </div>
+
+      <div class="card">
+        <h2>Selected Edge</h2>
+        <div id="selected-info" class="selected">Click an edge in the web to inspect.</div>
+      </div>
+
+      <div class="card">
+        <h2>Search Result</h2>
+        <div id="search-result" class="selected">—</div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <span>Kruskal + Union-Find · Incremental MST updates · SVG</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
