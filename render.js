@@ -2,14 +2,14 @@
  * Render module - Handles all SVG and DOM rendering logic.
  */
 
-import { graph, nm } from './graph.js';
+import { graph, nm } from './state.js';
 import { detectAnomaly, suspicionLevelFor } from './anomaly.js';
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 const CX = 360, CY = 360, R_LAYOUT = 265, R_NODE = 26;
 
 // Pre-calculate node positions in a circle
-export const nodePos = graph.nodes.map((_, i) => {
+const nodePos = graph.nodes.map((_, i) => {
   const theta = (i / graph.nodes.length) * Math.PI * 2 - Math.PI / 2;
   return { 
     x: CX + R_LAYOUT * Math.cos(theta), 
@@ -23,7 +23,7 @@ const nodesLayer = document.getElementById("nodes-layer");
 /**
  * Main render function - refreshes all UI components.
  */
-export function render() {
+function render() {
   renderEdges();
   renderNodes();
   renderMstPanel();
@@ -47,7 +47,6 @@ function renderEdges() {
     const group = document.createElementNS(SVG_NS, "g");
     group.dataset.edgeId = e.id;
 
-    // Invisible thick line for easier clicking
     const hit = document.createElementNS(SVG_NS, "line");
     hit.setAttribute("x1", p1.x); hit.setAttribute("y1", p1.y);
     hit.setAttribute("x2", p2.x); hit.setAttribute("y2", p2.y);
@@ -137,13 +136,6 @@ function renderMstPanel() {
     li.innerHTML = `<span>#${e.id} · ${nm(e.a)} ↔ ${nm(e.b)}</span><span class="w">${e.weight}</span>`;
     list.appendChild(li);
   }
-  
-  if (!mstEdges.length) {
-    const li = document.createElement("li");
-    li.style.borderLeftColor = "var(--muted)";
-    li.textContent = "No MST edges yet.";
-    list.appendChild(li);
-  }
 }
 
 /**
@@ -180,7 +172,7 @@ function renderAnomalyPanel() {
 /**
  * Displays details of the currently selected edge.
  */
-export function renderSelectedInfo() {
+function renderSelectedInfo() {
   const box = document.getElementById("selected-info");
   const id = graph.selectedEdgeId;
   
@@ -205,7 +197,7 @@ export function renderSelectedInfo() {
 /**
  * Populates a <select> with all available nodes.
  */
-export function populateNodeSelect(sel) {
+function populateNodeSelect(sel) {
   sel.innerHTML = graph.nodes
     .map(n => `<option value="${n.id}">${n.name}</option>`).join("");
 }
@@ -213,7 +205,7 @@ export function populateNodeSelect(sel) {
 /**
  * Refreshes the edge selection dropdowns in the forms.
  */
-export function refreshEdgeSelects() {
+function refreshEdgeSelects() {
   const options = [...graph.edges.values()]
     .sort((x, y) => x.id - y.id)
     .map(e => `<option value="${e.id}">#${e.id} · ${nm(e.a)} ↔ ${nm(e.b)} (w=${e.weight})</option>`)
@@ -230,7 +222,7 @@ export function refreshEdgeSelects() {
 /**
  * Displays the result of a node search (its connections).
  */
-export function renderSearchResult(nodeId) {
+function renderSearchResult(nodeId) {
   const box = document.getElementById("search-result");
   const eids = [...graph.adjacency.get(nodeId)];
   
@@ -253,3 +245,15 @@ export function renderSearchResult(nodeId) {
     
   box.innerHTML = `<div>${nm(nodeId)} has <strong>${eids.length}</strong> thread(s):</div><ul>${rows}</ul>`;
 }
+
+// Exports
+export { 
+  nodePos, 
+  render, 
+  renderNodes, 
+  renderEdges, 
+  renderSelectedInfo, 
+  populateNodeSelect, 
+  refreshEdgeSelects, 
+  renderSearchResult 
+};

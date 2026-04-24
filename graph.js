@@ -1,35 +1,9 @@
 /**
- * Graph module - Handles graph data structure and basic CRUD operations.
+ * Graph module - Handles basic CRUD operations for edges.
  */
 
+import { graph } from './state.js';
 import { mstIncrementalOnAdd, mstIncrementalOnRemove } from './mst.js';
-
-export const MEMBERS = [
-  "Chrollo", "Franklin", "Feitan", "Machi", "Nobunaga",
-  "Shalnark", "Phinks", "Pakunoda", "Shizuku", "Bonolenov",
-  "Uvogin", "Kortopi", "Kalluto"
-];
-
-export const graph = {
-  nodes: MEMBERS.map((name, i) => ({ id: i, name })),
-  edges: new Map(),
-  adjacency: new Map(),
-  mst: new Set(),
-  mstWeight: 0,
-  nextEdgeId: 1,
-  selectedEdgeId: null,
-  highlightedNode: null
-};
-
-// Initialize adjacency list
-MEMBERS.forEach((_, i) => graph.adjacency.set(i, new Set()));
-
-/**
- * Returns the name of a member by ID.
- */
-export function nm(id) {
-  return MEMBERS[id];
-}
 
 /**
  * Adds a new edge to the graph and updates the MST incrementally.

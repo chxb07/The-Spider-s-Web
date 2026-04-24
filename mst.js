@@ -2,7 +2,7 @@
  * MST module - Implements Kruskal's algorithm and incremental MST updates.
  */
 
-import { graph } from './graph.js';
+import { graph } from './state.js';
 import { isValidForMST } from './anomaly.js';
 
 /**

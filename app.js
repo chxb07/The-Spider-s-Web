@@ -3,7 +3,7 @@
  * Wires together the modules and initializes the spider's web.
  */
 
-import { graph } from './graph.js';
+import { graph } from './state.js';
 import { computeMST } from './mst.js';
 import { render, renderSelectedInfo } from './render.js';
 import { wireForms } from './events.js';
