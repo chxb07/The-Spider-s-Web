@@ -2,7 +2,9 @@
  * Anomaly Detection module - Identifies "cursed" or suspicious edges in the web.
  */
 
-import { graph, nm } from './state.js';
+import { graph, nm } from './state.js?v=2';
+
+console.log("✅ anomaly.js loaded");
 
 export const WEIGHT_MIN = 1;
 export const WEIGHT_MAX = 20;

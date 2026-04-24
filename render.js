@@ -2,8 +2,10 @@
  * Render module - Handles all SVG and DOM rendering logic.
  */
 
-import { graph, nm } from './state.js';
-import { detectAnomaly, suspicionLevelFor } from './anomaly.js';
+import { graph, nm } from './state.js?v=2';
+import { detectAnomaly, suspicionLevelFor } from './anomaly.js?v=2';
+
+console.log("✅ render.js loaded");
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 const CX = 360, CY = 360, R_LAYOUT = 265, R_NODE = 26;

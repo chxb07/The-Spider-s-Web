@@ -2,8 +2,10 @@
  * Graph module - Handles basic CRUD operations for edges.
  */
 
-import { graph } from './state.js';
-import { mstIncrementalOnAdd, mstIncrementalOnRemove } from './mst.js';
+import { graph } from './state.js?v=2';
+import { mstIncrementalOnAdd, mstIncrementalOnRemove } from './mst.js?v=2';
+
+console.log("✅ graph.js loaded");
 
 /**
  * Adds a new edge to the graph and updates the MST incrementally.

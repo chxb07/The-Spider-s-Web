@@ -2,8 +2,10 @@
  * MST module - Implements Kruskal's algorithm and incremental MST updates.
  */
 
-import { graph } from './state.js';
-import { isValidForMST } from './anomaly.js';
+import { graph } from './state.js?v=2';
+import { isValidForMST } from './anomaly.js?v=2';
+
+console.log("✅ mst.js loaded");
 
 /**
  * Disjoint Set Union (DSU) / Union-Find structure.

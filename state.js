@@ -3,6 +3,8 @@
  * This file breaks circular dependencies between logic modules.
  */
 
+console.log("✅ state.js loaded");
+
 export const MEMBERS = [
   "Chrollo", "Franklin", "Feitan", "Machi", "Nobunaga",
   "Shalnark", "Phinks", "Pakunoda", "Shizuku", "Bonolenov",

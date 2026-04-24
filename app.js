@@ -3,10 +3,12 @@
  * Wires together the modules and initializes the spider's web.
  */
 
-import { graph } from './state.js';
-import { computeMST } from './mst.js';
-import { render, renderSelectedInfo } from './render.js';
-import { wireForms } from './events.js';
+import { graph } from './state.js?v=2';
+import { computeMST } from './mst.js?v=2';
+import { render, renderSelectedInfo } from './render.js?v=2';
+import { wireForms } from './events.js?v=2';
+
+console.log("✅ app.js loaded");
 
 /**
  * Populates the graph with initial "seed" data from the script's origin.

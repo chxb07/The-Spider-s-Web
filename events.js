@@ -2,15 +2,17 @@
  * Events module - Handles UI interaction and form submissions.
  */
 
-import { graph } from './state.js';
-import { addEdge, removeEdge, updateWeight } from './graph.js';
+import { graph } from './state.js?v=2';
+import { addEdge, removeEdge, updateWeight } from './graph.js?v=2';
 import { 
   render, 
   renderNodes, 
   renderSearchResult, 
   renderSelectedInfo, 
   populateNodeSelect 
-} from './render.js';
+} from './render.js?v=2';
+
+console.log("✅ events.js loaded");
 
 /**
  * Attaches event listeners to all UI forms and buttons.
